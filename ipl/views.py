@@ -61,4 +61,22 @@ def economy_bowlers(request):
     return JsonResponse({'bowlers':bowlers, 'economies':economies})
 
 
-   
+def economies_at_death(request):
+    queryset = Delivery.objects.filter(over__gt=15, is_super_over=False).values('bowler').annotate(runs=(Sum('total_runs') - (Sum('legbye_runs') + Sum('bye_runs')))).annotate(balls= Count('ball') - Count(Case(When(noball_runs__gt=0, then=0))) - Count(Case(When(wide_runs__gt=0, then=0)))).annotate(economy= Cast((F('runs')/(F('balls')/6.0)), FloatField())).order_by('economy')
+    bowlers = []
+    economies = []
+    for bowler in queryset:
+        if bowler['balls'] > 24 and bowler['economy'] < 8:
+            bowlers.append(bowler['bowler'])
+            economies.append(bowler['economy'])
+    return JsonResponse({'bowlers':bowlers, 'economies':economies})
+
+
+def economical_teams_at_death(request):
+    queryset = Delivery.objects.filter(over__gt=15, is_super_over=False).values('bowling_team').annotate(runs=(Sum('total_runs'))).annotate(balls= Count('ball') - Count(Case(When(noball_runs__gt=0, then=0))) - Count(Case(When(wide_runs__gt=0, then=0)))).annotate(economy= Cast((F('runs')/(F('balls')/6.0)), FloatField())).order_by('economy')
+    teams = []
+    economies = []
+    for team in queryset:
+        teams.append(team['bowling_team'])
+        economies.append(team['economy'])
+    return JsonResponse({'teams':teams, 'economies':economies})

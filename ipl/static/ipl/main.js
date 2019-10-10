@@ -147,3 +147,77 @@ function PlotFourth() {
             });
         })
 }
+
+
+function PlotFifth() {
+    let host = window.location.host
+    fetch(`http://${host}/ipl/api/fifth`)
+        .then(response => response.json())
+        .then((result) => {
+            bowlers = result['bowlers'];
+            economies = result['economies'];
+            var chart = Highcharts.chart("container", {
+                title: {
+                    text: "Most Economical Bowlers at death overs"
+                },
+                subtitle: {
+                    text: "IPL Data"
+                },
+                xAxis: {
+                    title: {
+                        text: "Bowler"
+                    },
+                    categories: bowlers
+                },
+                yAxis: {
+                    title: {
+                        text: "Economy Rate"
+                    }
+                },
+                series: [
+                    {
+                        type: "column",
+                        name: "Economy Rate",
+                        colorByPoint: true,
+                        data: economies,
+                        showInLegend: false
+                    }
+                ]
+            });
+        })
+
+        fetch(`http://${host}/ipl/api/fifth/1`)
+        .then(response => response.json())
+        .then((result) => {
+            teams = result['teams'];
+            economies = result['economies'];
+            var chart = Highcharts.chart("container-1", {
+                title: {
+                    text: "Most Economical Teams at death overs"
+                },
+                subtitle: {
+                    text: "IPL Data"
+                },
+                xAxis: {
+                    title: {
+                        text: "Team"
+                    },
+                    categories: teams
+                },
+                yAxis: {
+                    title: {
+                        text: "Economy Rate"
+                    }
+                },
+                series: [
+                    {
+                        type: "column",
+                        name: "Economy Rate",
+                        colorByPoint: true,
+                        data: economies,
+                        showInLegend: false
+                    }
+                ]
+            });
+        })
+}
