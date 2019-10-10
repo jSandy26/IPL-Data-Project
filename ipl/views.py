@@ -2,14 +2,21 @@ from django.shortcuts import render
 
 # Create your views here.
 from ipl.models import Match, Delivery
+from django.forms import ModelForm
 from django.db.models import Count, Sum, Case, When, F, FloatField
 from django.db.models.functions import Cast
 from django.http import JsonResponse
+from django.conf import settings
+from django.core.cache.backends.base import DEFAULT_TIMEOUT
+from django.views.decorators.cache import cache_page
 
+CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 
 def index(request):
     return render(request, 'index.html', context={})
 
+
+@cache_page(CACHE_TTL)
 def matches_per_season(request):
     num_matches_season = Match.objects.all().values('season').annotate(count = Count('season')).order_by('season')
     context = {}
@@ -18,7 +25,6 @@ def matches_per_season(request):
     seasons = list(context.keys())
     matches = list(context.values())
     return JsonResponse({'seasons': seasons, 'matches': matches})
-
 
 def matches_won(request):
     seasons = Match.objects.all().values('season').order_by('season').distinct()
@@ -80,3 +86,26 @@ def economical_teams_at_death(request):
         teams.append(team['bowling_team'])
         economies.append(team['economy'])
     return JsonResponse({'teams':teams, 'economies':economies})
+
+
+class MatchForm(ModelForm):
+   class Meta:
+       model = Match
+       fields = '__all__'
+
+class DeliveryForm(ModelForm):
+   class Meta:
+       model = Delivery
+       fields = '__all__'
+
+def get_match(request, id):
+   match = Match.objects.get(pk=id)
+   form = MatchForm(instance=match)
+   return render(request,'get_match.html',{'form':form})
+
+
+def get_delivery(request, id):
+    id += 300922
+    delivery = Delivery.objects.get(pk=id)
+    form = DeliveryForm(instance=delivery)
+    return render(request, 'get_match.html', {'form':form})

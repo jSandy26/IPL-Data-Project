@@ -79,6 +79,7 @@ function PlotThird() {
         .then((result) => {
             teams = result['teams'];
             extra_runs = result['extra_runs'];
+            console.log(teams)
             var chart = Highcharts.chart("container", {
                 title: {
                     text: "Extra runs conceded by teams in 2016"
@@ -191,6 +192,7 @@ function PlotFifth() {
         .then((result) => {
             teams = result['teams'];
             economies = result['economies'];
+            
             var chart = Highcharts.chart("container-1", {
                 title: {
                     text: "Most Economical Teams at death overs"

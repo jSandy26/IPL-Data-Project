@@ -11,4 +11,6 @@ urlpatterns = [
     path('api/fourth', views.economy_bowlers, name='economy_bowlers'),
     path('api/fifth', views.economies_at_death, name='economies_at_death'),
     path('api/fifth/1', views.economical_teams_at_death, name='economical_teams_at_death'),
+    path('api/get/match/<int:id>', views.get_match, name='get_match'),
+    path('api/get/delivery/<int:id>', views.get_delivery, name='get_delivery'),
 ]
