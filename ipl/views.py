@@ -2,7 +2,8 @@ from django.shortcuts import render
 
 # Create your views here.
 from ipl.models import Match, Delivery
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, Case, When, F, FloatField
+from django.db.models.functions import Cast
 from django.http import JsonResponse
 
 
@@ -40,10 +41,6 @@ def matches_won(request):
     return JsonResponse({'season': seasons_list, 'team_data' : team_data})
 
 def extra_runs(request):
-#    queryset = Delivery.objects.filter(match_id__in=Subquery \
-#        (Matches.objects.filter(season=2016).values('id')), \
-#            is_super_over=False).values('bowling_team').annotate(\
-#                sum=Sum('extra_runs')).order_by('sum')
     queryset = Delivery.objects.filter(match_id__season = 2016, is_super_over=False).values('bowling_team').annotate(sum=Sum('extra_runs')).order_by('sum')
     extra_runs_per_team = {}
 
@@ -54,6 +51,14 @@ def extra_runs(request):
     return JsonResponse({'teams': teams, 'extra_runs': extra_runs_conceded})
 
 def economy_bowlers(request):
-    queryset = Delivery.objects.filter(match_id__season = 2017, is_super_over=False).values('bowler').annotate(sum=(Sum('total_runs') - Sum('legbye_runs') - Sum('bye_runs'))).order_by('sum')
+    queryset = Delivery.objects.filter(match_id__season = 2015, is_super_over=False).values('bowler').annotate(runs=(Sum('total_runs') - (Sum('legbye_runs') + Sum('bye_runs')))).annotate(balls= Count('ball') - Count(Case(When(noball_runs__gt=0, then=0))) - Count(Case(When(wide_runs__gt=0, then=0)))).annotate(economy= Cast((F('runs')/(F('balls')/6.0)), FloatField())).order_by('economy')[:10]
+
+    bowlers = []
+    economies = []
+    for bowler in queryset:
+        bowlers.append(bowler['bowler'])
+        economies.append(bowler['economy'])
+    return JsonResponse({'bowlers':bowlers, 'economies':economies})
+
 
    

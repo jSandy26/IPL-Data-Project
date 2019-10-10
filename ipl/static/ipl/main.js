@@ -109,3 +109,41 @@ function PlotThird() {
             });
         })
 }
+
+function PlotFourth() {
+    let host = window.location.host
+    fetch(`http://${host}/ipl/api/fourth`)
+        .then(response => response.json())
+        .then((result) => {
+            bowlers = result['bowlers'];
+            economies = result['economies'];
+            var chart = Highcharts.chart("container", {
+                title: {
+                    text: "Most Economical Bowlers in 2015"
+                },
+                subtitle: {
+                    text: "IPL Data"
+                },
+                xAxis: {
+                    title: {
+                        text: "Bowler"
+                    },
+                    categories: bowlers
+                },
+                yAxis: {
+                    title: {
+                        text: "Economy Rate"
+                    }
+                },
+                series: [
+                    {
+                        type: "column",
+                        name: "Economy Rate",
+                        colorByPoint: true,
+                        data: economies,
+                        showInLegend: false
+                    }
+                ]
+            });
+        })
+}
