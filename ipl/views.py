@@ -10,6 +10,7 @@ from django.conf import settings
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
+import json
 
 CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 
@@ -109,28 +110,29 @@ def get_match(request, id):
 
 
 def get_delivery(request, id):
-    id += 300922
     delivery = Delivery.objects.get(pk=id)
     form = DeliveryForm(instance=delivery)
     return render(request, 'get_match.html', {'form':form})
 
 @csrf_exempt
 def create_match(request):
-  body_unicode = request.body.decode('utf-8')
-  print('un',body_unicode)
-  body = json.loads(body_unicode)
-  print('body',body)
-  u = Matches(**body)
-  print('u',u)
-  u.save()
-  return JsonResponse({"result": "OK"})
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    match = Match(**body)
+    match.save()
+    return JsonResponse({"result": "OK"})
 
+@csrf_exempt
 def create_delivery(request):
-    form = DeliveryForm()
-    return render(request, 'create_form.html', {'form': form})
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    delivery = Delivery(**body)
+    delivery.save()
+    return JsonResponse({"result": "OK"})
+    
 
+@csrf_exempt
 def get_delivery_api(request,id):
-    id += 300922
     if request.method == 'DELETE':
         delivery = Delivery.objects.get(pk=id).delete()
         delivery = {'result':"deleted"}
@@ -141,6 +143,7 @@ def get_delivery_api(request,id):
             raise Http404
     return JsonResponse(delivery, safe=False)
 
+@csrf_exempt
 def get_match_api(request,id):
     if request.method == 'DELETE':
         match = Match.objects.get(pk=id).delete()
