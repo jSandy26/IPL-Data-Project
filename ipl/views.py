@@ -141,6 +141,11 @@ def get_delivery_api(request,id):
             delivery = Delivery.objects.values().get(pk=id)
         except Delivery.DoesNotExist:
             raise Http404
+    elif request.method == 'PUT':
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+        Delivery.objects.filter(pk=id).update(**body)
+        delivery = {'result': 'updated'}
     return JsonResponse(delivery, safe=False)
 
 @csrf_exempt
@@ -153,4 +158,10 @@ def get_match_api(request,id):
             match = Match.objects.values().get(pk=id)
         except Match.DoesNotExist:
             raise Http404
+    elif request.method == 'PUT':
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+        Match.objects.filter(pk=id).update(**body)
+        match = {'result': 'updated'}
+
     return JsonResponse(match, safe=False)
