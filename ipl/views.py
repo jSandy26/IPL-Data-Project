@@ -210,8 +210,10 @@ class DeliveryDetailView(generics.RetrieveUpdateDestroyAPIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-class CreateMatchView(generics.CreateAPIView):
+class CreateMatchView(generics.ListCreateAPIView):
     serializer_class = MatchSerializer
+    queryset = Match.objects.all()
 
-class CreateDeliveryView(generics.CreateAPIView):
+class CreateDeliveryView(generics.ListCreateAPIView):
     serializer_class = DeliverySerializer
+    queryset = Delivery.objects.all()
