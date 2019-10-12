@@ -16,10 +16,10 @@ urlpatterns = [
     # path('api/get/delivery/<int:id>', views.get_delivery, name='get_delivery'),
     # path('api/create/match', views.create_match, name='create_match'),
     # path('api/create/delivery', views.create_delivery, name='create_delivery'),
-    path('api/deliveries/delivery/<int:id>', views.get_delivery_api, name='get_delivery_api'),
-    path('api/matches/match/<int:id>', views.get_match_api, name='get_match_api'),
+    path('api/deliveries/<int:id>', views.get_delivery_api, name='get_delivery_api'),
+    path('api/matches/<int:id>', views.get_match_api, name='get_match_api'),
     path('api/match/', views.create_match, name='create_match'),
-    path('api/delivery', views.create_delivery, name='create_delivery'),
+    path('api/delivery/', views.create_delivery, name='create_delivery'),
 
     path('matches/<int:pk>', MatchDetailView.as_view(), name="match-detail"),
     path('deliveries/<int:pk>', DeliveryDetailView.as_view(), name="delivery-detail"),
