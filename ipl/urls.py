@@ -1,6 +1,7 @@
 from django.urls import path
 
 from . import views
+from .views import MatchDetailView, DeliveryDetailView, CreateMatchView, CreateDeliveryView
 
 app_name = 'ipl'
 urlpatterns = [
@@ -11,12 +12,17 @@ urlpatterns = [
     path('api/fourth', views.economy_bowlers, name='economy_bowlers'),
     path('api/fifth', views.economies_at_death, name='economies_at_death'),
     path('api/fifth/1', views.economical_teams_at_death, name='economical_teams_at_death'),
-    path('api/get/match/<int:id>', views.get_match, name='get_match'),
-    path('api/get/delivery/<int:id>', views.get_delivery, name='get_delivery'),
+    # path('api/get/match/<int:id>', views.get_match, name='get_match'),
+    # path('api/get/delivery/<int:id>', views.get_delivery, name='get_delivery'),
     # path('api/create/match', views.create_match, name='create_match'),
     # path('api/create/delivery', views.create_delivery, name='create_delivery'),
     path('api/deliveries/delivery/<int:id>', views.get_delivery_api, name='get_delivery_api'),
     path('api/matches/match/<int:id>', views.get_match_api, name='get_match_api'),
     path('api/match/', views.create_match, name='create_match'),
     path('api/delivery', views.create_delivery, name='create_delivery'),
+
+    path('matches/<int:pk>', MatchDetailView.as_view(), name="match-detail"),
+    path('deliveries/<int:pk>', DeliveryDetailView.as_view(), name="delivery-detail"),
+    path('matches/', CreateMatchView.as_view(), name='create-match'),
+    path('deliveries/', CreateDeliveryView.as_view(), name='create-delivery'),
 ]

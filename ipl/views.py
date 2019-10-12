@@ -11,6 +11,10 @@ from django.core.cache.backends.base import DEFAULT_TIMEOUT
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
 import json
+from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework.views import status
+from .serializers import MatchSerializer, DeliverySerializer
 
 CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 
@@ -28,26 +32,27 @@ def matches_per_season(request):
     matches = list(context.values())
     return JsonResponse({'seasons': seasons, 'matches': matches})
 
-@cache_page(CACHE_TTL)
+# @cache_page(CACHE_TTL)
 def matches_won(request):
-    seasons = Match.objects.all().values('season').order_by('season').distinct()
-    teams = Match.objects.exclude(winner=None).values('winner').order_by('winner').distinct()
-    queryset = Match.objects.exclude(winner=None).values('winner','season').annotate(count=Count('winner')).order_by('season')
-    seasons_list = []
-    for season in seasons:
-        seasons_list.append(season['season'])
-    team_wins_per_season = {}
-    for team in teams:
-        team_wins_per_season[team['winner']] = [0]*len(seasons)
+    winner_season = Match.objects.all().values('season', 'winner').order_by('season').distinct()
+    queryset = Match.objects.exclude(winner=None).values(
+        'winner', 'season').annotate(count=Count('winner')).order_by('season')
+    seasons_list = sorted(list(set([row['season'] for row in winner_season])))
+    winners = list(set([row['winner'] for row in winner_season]))
+    data = transform_data(queryset, seasons_list, winners)
+    return JsonResponse(data)
+
+def transform_data(queryset, seasons_list, winners):
+    team_with_data = {}
+    for team in winners:
+        team_with_data[team] = [0]*len(seasons_list)
     for row in queryset:
         season = row['season']
         winner = row['winner']
         count = row['count']
-        team_wins_per_season[winner][seasons_list.index(season)] = count
-    team_data = []
-    for data in team_wins_per_season:
-        team_data.append({'name': data, 'data': team_wins_per_season[data]})
-    return JsonResponse({'season': seasons_list, 'team_data' : team_data})
+        team_with_data[winner][seasons_list.index(season)] = count
+    team_data = [{'name': data, 'data': team_with_data[data]} for data in team_with_data]
+    return {'season': seasons_list, 'team_data': team_data}
 
 @cache_page(CACHE_TTL)
 def extra_runs(request):
@@ -165,3 +170,48 @@ def get_match_api(request,id):
         match = {'result': 'updated'}
 
     return JsonResponse(match, safe=False)
+
+
+class MatchDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Provides a get method handler.
+    """
+    queryset = Match.objects.all()
+    serializer_class = MatchSerializer
+
+    def get(self, request, *args, **kwargs):
+        try:
+            a_match = self.queryset.get(pk=kwargs["pk"])
+            return Response(MatchSerializer(a_match).data)
+        except Match.DoesNotExist:
+            return Response(
+                data={
+                    "message": "Match with id: {} does not exist".format(kwargs["pk"])
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+class DeliveryDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Provides a get method handler.
+    """
+    queryset = Delivery.objects.all()
+    serializer_class = DeliverySerializer
+
+    def get(self, request, *args, **kwargs):
+        try:
+            a_delivery = self.queryset.get(pk=kwargs["pk"])
+            return Response(DeliverySerializer(a_delivery).data)
+        except Delivery.DoesNotExist:
+            return Response(
+                data={
+                    "message": "Delivery with id: {} does not exist".format(kwargs["pk"])
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+class CreateMatchView(generics.CreateAPIView):
+    serializer_class = MatchSerializer
+
+class CreateDeliveryView(generics.CreateAPIView):
+    serializer_class = DeliverySerializer
