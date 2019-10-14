@@ -15,3 +15,19 @@
     * To update data.
 4. DELETE Api for Match and Delivery
     * To delete data.
+
+## REST APIs
+1. GET Api for Match and Delivery
+    * To retrive data
+2. POST Api for Match and Delivery
+    * To create and save data into database.
+3. PUT Api for Match and Delivery
+    * To update data.
+4. DELETE Api for Match and Delivery
+    * To delete data.
+
+## Installation Guide
+* All the packages necessary are included in the 'requirements.txt' file.
+* Create a virtual env using `virtualenv env`
+* Activate the virtual env
+* Run the command `pip install -r requirements.txt`
