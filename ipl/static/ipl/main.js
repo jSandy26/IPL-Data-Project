@@ -5,6 +5,8 @@ function PlotFirst() {
         .then((result) => {
             seasons = result['seasons'];
             matches = result['matches'];
+            div = document.getElementById('container-1');
+            div.innerHTML = ''
             var chart = Highcharts.chart("container", {
                 title: {
                     text: "Matches per Season"
@@ -43,6 +45,8 @@ function PlotSecond() {
     .then((result) => {
         seasons = result['season'];
         match_data = result['team_data'];
+        div = document.getElementById('container-1');
+        div.innerHTML = ''
         var chart = Highcharts.chart('container', {
             chart: {
                 type: 'bar'
@@ -79,6 +83,8 @@ function PlotThird() {
         .then((result) => {
             teams = result['teams'];
             extra_runs = result['extra_runs'];
+            div = document.getElementById('container-1');
+            div.innerHTML = ''
             console.log(teams)
             var chart = Highcharts.chart("container", {
                 title: {
@@ -118,6 +124,8 @@ function PlotFourth() {
         .then((result) => {
             bowlers = result['bowlers'];
             economies = result['economies'];
+            div = document.getElementById('container-1');
+            div.innerHTML = ''
             var chart = Highcharts.chart("container", {
                 title: {
                     text: "Most Economical Bowlers in 2015"
