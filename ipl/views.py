@@ -98,26 +98,26 @@ def economical_teams_at_death(request):
     return JsonResponse({'teams':teams, 'economies':economies})
 
 
-class MatchForm(ModelForm):
-   class Meta:
-       model = Match
-       fields = '__all__'
+# class MatchForm(ModelForm):
+#    class Meta:
+#        model = Match
+#        fields = '__all__'
 
-class DeliveryForm(ModelForm):
-   class Meta:
-       model = Delivery
-       fields = '__all__'
+# class DeliveryForm(ModelForm):
+#    class Meta:
+#        model = Delivery
+#        fields = '__all__'
 
-def get_match(request, id):
-   match = Match.objects.get(pk=id)
-   form = MatchForm(instance=match)
-   return render(request,'get_match.html',{'form':form})
+# def get_match(request, id):
+#    match = Match.objects.get(pk=id)
+#    form = MatchForm(instance=match)
+#    return render(request,'get_match.html',{'form':form})
 
 
-def get_delivery(request, id):
-    delivery = Delivery.objects.get(pk=id)
-    form = DeliveryForm(instance=delivery)
-    return render(request, 'get_match.html', {'form':form})
+# def get_delivery(request, id):
+#     delivery = Delivery.objects.get(pk=id)
+#     form = DeliveryForm(instance=delivery)
+#     return render(request, 'get_match.html', {'form':form})
 
 @csrf_exempt
 def create_match(request):
