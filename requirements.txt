@@ -1,4 +1,4 @@
-Django==2.2.6
+Django==2.2.20
 django-braces==1.13.0
 django-crispy-forms==1.7.2
 -e git+https://github.com/novapost/django-highcharts.git@34dd1b644325aaf8d9772feaf09827c730e8b154#egg=django_highcharts
